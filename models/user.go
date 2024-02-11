@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"time"
+
 	"golang.org/x/crypto/bcrypt"
 )
 

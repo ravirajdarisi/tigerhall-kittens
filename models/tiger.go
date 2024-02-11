@@ -16,10 +16,13 @@ type Tiger struct {
 }
 
 // NewTiger creates a new Tiger instance.
-func NewTiger(name string, dateOfBirth time.Time) *Tiger {
+func NewTiger(name string, dateOfBirth, lastSeenTimestamp time.Time, lastSeenLat, lastSeenLon float64) *Tiger {
 	return &Tiger{
-		Name:        name,
-		DateOfBirth: dateOfBirth,
+		Name:              name,
+		DateOfBirth:       dateOfBirth,
+		LastSeenTimestamp: lastSeenTimestamp,
+		LastSeenLat:       lastSeenLat,
+		LastSeenLon:       lastSeenLon,
 	}
 }
 
@@ -40,10 +43,10 @@ func (t *Tiger) UpdateLastSeen(db *sql.DB, timestamp time.Time, lat, lon float64
 	return err
 }
 
-// GetAllTigers retrieves all tiger records from the database.
-func GetAllTigers(db *sql.DB) ([]Tiger, error) {
-	query := `SELECT id, name, date_of_birth, last_seen_timestamp, last_seen_lat, last_seen_lon FROM tigers ORDER BY last_seen_timestamp DESC`
-	rows, err := db.Query(query)
+// GetAllTigers retrieves all tigers from the database with pagination.
+func GetAllTigers(db *sql.DB, limit, offset int) ([]Tiger, error) {
+	query := `SELECT id, name, date_of_birth, last_seen_timestamp, last_seen_lat, last_seen_lon FROM tigers ORDER BY last_seen_timestamp DESC LIMIT $1 OFFSET $2`
+	rows, err := db.Query(query, limit, offset)
 	if err != nil {
 		return nil, err
 	}
